@@ -14,13 +14,14 @@ defmodule Arc.Storage.Local do
   end
 
   def url(definition, version, file_and_scope, _options \\ []) do
-    local_path = build_local_path(definition, version, file_and_scope)
+    local_path = build_local_request_path(definition, version, file_and_scope)
 
-    url = if String.starts_with?(local_path, "/") do
-      local_path
-    else
-      "/" <> local_path
-    end
+    url =
+      if String.starts_with?(local_path, "/") do
+        local_path
+      else
+        "/" <> local_path
+      end
 
     url |> URI.encode()
   end
@@ -34,6 +35,17 @@ defmodule Arc.Storage.Local do
     Path.join([
       definition.storage_dir(version, file_and_scope),
       Arc.Definition.Versioning.resolve_file_name(definition, version, file_and_scope)
+    ])
+  end
+
+  defp build_local_request_path(definition, version, file_and_scope) do
+    Path.join([
+      definition.request_dir(version, file_and_scope),
+      Arc.Definition.Versioning.resolve_file_name(
+        definition,
+        version,
+        file_and_scope
+      )
     ])
   end
 end
